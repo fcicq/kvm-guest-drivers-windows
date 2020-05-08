@@ -1,0 +1,91 @@
+;-------------------------------------------------------------------------
+; VIOPROT.INF -- VirtIO NetKVM Protocol Driver
+;
+; Copyright (c) 2003, Microsoft Corporation
+; Copyright (c) 2020 Oracle and/or its affiliates.
+;-------------------------------------------------------------------------
+
+[version]
+Signature   = "$Windows NT$"
+Class       = NetTrans
+ClassGUID   = {4d36e975-e325-11ce-bfc1-08002be10318}
+Provider    = %VENDOR%
+DriverVer   = 07/16/2010,4.2
+CatalogFile  = netkvm.cat
+
+
+[Manufacturer]
+%VENDOR%=Standard,NTx86,NTamd64
+
+[Standard.NTx86]
+%NETKVMP_Desc%=Install,NETKVM_P
+
+[Standard.NTamd64]
+%NETKVMP_Desc%=Install,NETKVM_P
+
+;-------------------------------------------------------------------------
+; Installation Section
+;-------------------------------------------------------------------------
+[Install]
+AddReg=Inst_Ndi
+Characteristics=0x0
+CopyFiles=Copy.Dll
+
+;-------------------------------------------------------------------------
+; Ndi installation support
+;-------------------------------------------------------------------------
+[Inst_Ndi]
+HKR, Ndi, ClsID, 0, {5a3db745-e424-4402-a575-af5e4bc65b1d}
+HKR, Ndi, ComponentDll, , netkvmno.dll
+HKR,Ndi,Service,,netkvm_p
+HKR,Ndi,HelpText,,%NETKVMP_HelpText%
+HKR,Ndi\Interfaces, UpperRange,, noupper
+HKR,Ndi\Interfaces, LowerRange,,"ndis5,ndis5_prot"
+
+;-------------------------------------------------------------------------
+; Service installation support
+;-------------------------------------------------------------------------
+[Install.Services]
+AddService=netkvm_p,,NETKVMP.ServiceInst,NETKVMP.EventLog
+
+[NETKVMP.ServiceInst]
+DisplayName     = %NETKVMP_Desc%
+ServiceType     = 1 ;SERVICE_KERNEL_DRIVER
+StartType       = 3 ;SERVICE_DEMAND_START
+ErrorControl    = 1 ;SERVICE_ERROR_NORMAL
+ServiceBinary   = %12%\netkvm.sys
+Description     = %NETKVMP_Desc%
+
+[NETKVMP.EventLog]
+AddReg = NETKVMP.EventLog.Reg
+
+[NETKVMP.EventLog.Reg]
+HKR, , EventMessageFile, 0x20000, "%%SystemRoot%%\System32\netevent.dll"
+HKR, , TypesSupported,   0x10001, 7
+
+[Install.Remove.Services]
+DelService=netkvm_p,0x200
+
+;-------------------------------------------------------------------------
+; Declare Destination Directories for file copy/deletion
+;-------------------------------------------------------------------------
+[SourceDisksNames]
+1=%DiskDescription%,"",,
+
+[SourceDisksFiles]
+netkvmno.dll=1
+
+[DestinationDirs]
+Copy.Dll    = 11    ; %windir%\System32
+
+;-------------------------------------------------------------------------
+; Files to Copy/Delete - Referenced by Install and Remove sections above
+;-------------------------------------------------------------------------
+[Copy.Dll]
+netkvmno.dll,,,2
+
+[Strings]
+VENDOR = "INX_COMPANY"
+DiskDescription = "VirtIO NetKVM Protocol Driver Disk"
+NETKVMP_Desc = "VirtIO NetKVM Protocol Driver"
+NETKVMP_HelpText = "A driver to support SRIOV for VirtIO network devices"

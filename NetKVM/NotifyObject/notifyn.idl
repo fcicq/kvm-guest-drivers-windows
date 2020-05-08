@@ -1,0 +1,25 @@
+/*
+ * Copyright (c) 2020 Oracle and/or its affiliates.
+ */
+
+#include <netcfgn.idl>
+
+[
+    uuid(6dd8b95f-e8b5-4e17-8e71-a87dbdca1a67),
+    version(1.0),
+    helpstring("NetKVM SR-IOV Notify Object 1.0 Type Library")
+]
+library NetKVMNotifyLib
+{
+    [
+        uuid(5a3db745-e424-4402-a575-af5e4bc65b1d),
+        helpstring("NetKVM SR-IOV Notify Class")
+    ]
+    coclass CNotifyObject
+    {
+        [restricted] interface INetCfgComponentControl;
+        [restricted] interface INetCfgComponentSetup;
+        [restricted] interface INetCfgComponentNotifyBinding;
+        [restricted] interface INetCfgComponentNotifyGlobal;
+    };
+};

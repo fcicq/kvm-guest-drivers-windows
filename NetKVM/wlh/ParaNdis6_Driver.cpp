@@ -40,6 +40,7 @@ sdkddkver.h before ntddk.h cause compilation failure in wdm.h and ntddk.h */
 #include "ParaNdis_Debug.h"
 #include "ParaNdis_DebugHistory.h"
 #include "ParaNdis6_Driver.h"
+#include "ParaNdis_Protocol.h"
 #include "Trace.h"
 #ifdef NETKVM_WPP_ENABLED
 #include "ParaNdis6_Driver.tmh"
@@ -381,6 +382,7 @@ static NDIS_STATUS ParaNdis6_Initialize(
     {
         pContext->m_StateMachine.NotifyInitialized();
         ParaNdis_DebugRegisterMiniport(pContext, TRUE);
+        ParaNdis_ProtocolRegisterAdapter(pContext);
     }
 
     DEBUG_EXIT_STATUS(status ? 0 : 2, status);
@@ -400,6 +402,7 @@ static VOID ParaNdis6_Halt(NDIS_HANDLE miniportAdapterContext, NDIS_HALT_ACTION 
     ParaNdis_CleanupContext(pContext);
     ParaNdis_DebugHistory(pContext, hopHalt, NULL, 0, 0, 0);
     ParaNdis_DebugRegisterMiniport(pContext, FALSE);
+    ParaNdis_ProtocolUnregisterAdapter(pContext);
     NdisFreeMemory(pContext->UnalignedAdapterContext, 0, 0);
     DEBUG_EXIT_STATUS(2, 0);
 }
@@ -1132,6 +1135,10 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT pDriverObject, PUNICODE_STRING pRegistryPath
 #ifdef NETKVM_WPP_ENABLED
         WPP_CLEANUP(pDriverObject);
 #endif // WPP
+    }
+    if (NT_SUCCESS(status))
+    {
+        ParaNdis_ProtocolInitialize(DriverHandle);
     }
     return status;
 }
