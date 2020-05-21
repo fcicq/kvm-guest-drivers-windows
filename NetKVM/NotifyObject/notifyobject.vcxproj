@@ -471,10 +471,16 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>
     <PostBuildEvent>
-      <Command>
-        xcopy /y /q $(PlatformTarget)\$(ConfigurationName)\vioprot.inf $(InstallRoot)\$(PlatformTarget)\$(ConfigurationName)\
-        xcopy /y /q $(PlatformTarget)\$(ConfigurationName)\netkvmno.dll $(InstallRoot)\$(PlatformTarget)\$(ConfigurationName)\
-        xcopy /y /q $(PlatformTarget)\$(ConfigurationName)\netkvmno.pdb $(InstallRoot)\$(PlatformTarget)\$(ConfigurationName)\
+      <Command>xcopy /y /q $(PlatformTarget)\$(ConfigurationName)\vioprot.inf $(InstallRoot)\$(PlatformTarget)\$(ConfigurationName)\
+xcopy /y /q $(PlatformTarget)\$(ConfigurationName)\netkvmno.dll $(InstallRoot)\$(PlatformTarget)\$(ConfigurationName)\
+xcopy /y /q $(PlatformTarget)\$(ConfigurationName)\netkvmno.pdb $(InstallRoot)\$(PlatformTarget)\$(ConfigurationName)\
+cd $(InstallRoot)\$(PlatformTarget)\$(ConfigurationName)
+echo Signing DLL
+signtool sign /a /fd sha256 /tr "http://sha256timestamp.ws.symantec.com/sha256/timestamp" netkvmno.dll
+echo Generating CAT file
+inf2cat /driver:. /os:$(Inf2CatWindowsVersionList)
+echo Signing CAT file
+signtool sign /a /fd sha256 /tr "http://sha256timestamp.ws.symantec.com/sha256/timestamp" vioprot.cat
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
