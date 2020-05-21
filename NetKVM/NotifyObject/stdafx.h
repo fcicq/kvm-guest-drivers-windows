@@ -39,7 +39,7 @@
 
 #define ELEMENTS_IN(x) (sizeof(x)/sizeof(x[0]))
  // netkvm protocol name
-#define NETKVM_PROTOCOL_NAME_W L"netkvm_p"
+#define NETKVM_PROTOCOL_NAME_W      L"vioprot"
 
 void Trace(LPCSTR format, ...);
 bool IsSupportedSRIOVAdapter(LPCWSTR pnpId);
