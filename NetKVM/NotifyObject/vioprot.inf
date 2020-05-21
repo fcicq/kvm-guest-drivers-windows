@@ -11,17 +11,17 @@ Class       = NetTrans
 ClassGUID   = {4d36e975-e325-11ce-bfc1-08002be10318}
 Provider    = %VENDOR%
 DriverVer   = 07/16/2010,4.2
-CatalogFile  = netkvm.cat
+CatalogFile  = vioprot.cat
 
 
 [Manufacturer]
 %VENDOR%=Standard,NTx86,NTamd64
 
 [Standard.NTx86]
-%NETKVMP_Desc%=Install,NETKVM_P
+%NETKVMP_Desc%=Install,VIOPROT
 
 [Standard.NTamd64]
-%NETKVMP_Desc%=Install,NETKVM_P
+%NETKVMP_Desc%=Install,VIOPROT
 
 ;-------------------------------------------------------------------------
 ; Installation Section
@@ -37,7 +37,7 @@ CopyFiles=Copy.Dll
 [Inst_Ndi]
 HKR, Ndi, ClsID, 0, {5a3db745-e424-4402-a575-af5e4bc65b1d}
 HKR, Ndi, ComponentDll, , netkvmno.dll
-HKR,Ndi,Service,,netkvm_p
+HKR,Ndi,Service,,netkvmp
 HKR,Ndi,HelpText,,%NETKVMP_HelpText%
 HKR,Ndi\Interfaces, UpperRange,, noupper
 HKR,Ndi\Interfaces, LowerRange,,"ndis5,ndis5_prot"
@@ -46,7 +46,7 @@ HKR,Ndi\Interfaces, LowerRange,,"ndis5,ndis5_prot"
 ; Service installation support
 ;-------------------------------------------------------------------------
 [Install.Services]
-AddService=netkvm_p,,NETKVMP.ServiceInst,NETKVMP.EventLog
+AddService=netkvmp,,NETKVMP.ServiceInst,NETKVMP.EventLog
 
 [NETKVMP.ServiceInst]
 DisplayName     = %NETKVMP_Desc%
@@ -64,7 +64,7 @@ HKR, , EventMessageFile, 0x20000, "%%SystemRoot%%\System32\netevent.dll"
 HKR, , TypesSupported,   0x10001, 7
 
 [Install.Remove.Services]
-DelService=netkvm_p,0x200
+DelService=netkvmp,0x200 ;SPSVCINST_STOPSERVICE
 
 ;-------------------------------------------------------------------------
 ; Declare Destination Directories for file copy/deletion
@@ -82,7 +82,7 @@ Copy.Dll    = 11    ; %windir%\System32
 ; Files to Copy/Delete - Referenced by Install and Remove sections above
 ;-------------------------------------------------------------------------
 [Copy.Dll]
-netkvmno.dll,,,2
+netkvmno.dll,,,2    ; COPYFLG_NOSKIP
 
 [Strings]
 VENDOR = "INX_COMPANY"

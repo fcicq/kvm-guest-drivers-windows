@@ -203,8 +203,8 @@ public:
         m_ProtocolHandle(NULL)
     {
         NDIS_PROTOCOL_DRIVER_CHARACTERISTICS pchs = {};
-        //pchs.Name = NDIS_STRING_CONST("netkvm_p");
-        pchs.Name = NDIS_STRING_CONST("NDISPROT");
+        pchs.Name = NDIS_STRING_CONST("netkvmp");
+        //pchs.Name = NDIS_STRING_CONST("NDISPROT");
         pchs.Header.Type = NDIS_OBJECT_TYPE_PROTOCOL_DRIVER_CHARACTERISTICS;
         pchs.Header.Revision = NDIS_PROTOCOL_DRIVER_CHARACTERISTICS_REVISION_2;
         pchs.Header.Size = NDIS_SIZEOF_PROTOCOL_DRIVER_CHARACTERISTICS_REVISION_2;
