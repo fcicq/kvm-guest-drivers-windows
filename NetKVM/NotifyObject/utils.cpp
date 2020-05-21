@@ -38,20 +38,58 @@ void Trace (LPCSTR szFormat, ...)
     va_end(arglist);
 }
 
-static LPCWSTR SupportedAdapters[] =
+class CSupportedAdapters : public CAtlArray<CStringW>
 {
-    L"ven_8086&dev_1515", //Intel X540 Virtual Function
-    L"ven_8086&dev_10ca", //Intel 82576 Virtual Function
-    L"ven_8086&dev_15a8", //Intel Ethernet Connection X552
-    L"ven_15b3&dev_101a", //Mellanox MT28800 Family
+public:
+    CSupportedAdapters()
+    {
+        HKEY hKey;
+        ULONG NoDefaults = false;
+        if (!RegOpenKeyExA(HKEY_LOCAL_MACHINE,
+                           "System\\CurrentControlSet\\Control\\VioProt",
+                           0, KEY_READ, &hKey)) {
+            ULONG len;
+            WCHAR buffer[1024] = {};
+            len = sizeof(NoDefaults);
+            RegGetValueW(hKey, NULL, L"NoDefaults", RRF_RT_DWORD, NULL, &NoDefaults, &len);
+            len = sizeof(buffer);
+            if (!RegGetValueW(hKey, NULL, L"Supported", RRF_RT_REG_MULTI_SZ, NULL, buffer, &len)) {
+                for (UINT i = 0; i < len; )
+                {
+                    CStringW s = buffer + i;
+                    if (s.IsEmpty())
+                        break;
+                    s.MakeLower();
+                    Add(s);
+                    i += s.GetLength() + 1;
+                }
+            }
+            RegCloseKey(hKey);
+        }
+        if (!NoDefaults) {
+            Add(L"ven_8086&dev_1515");  // Intel X540 Virtual Function
+            Add(L"ven_8086&dev_10ca");  // Intel 82576 Virtual Function
+            Add(L"ven_8086&dev_15a8");  // Intel Ethernet Connection X552
+            Add(L"ven_15b3&dev_101a");  // Mellanox MT28800 Family
+        }
+        for (UINT i = 0; i < GetCount(); ++i)
+        {
+            CStringW& s = GetAt(i);
+            Trace("NotifyObj: supported %S", s.GetBuffer());
+        }
+    }
 };
+
+static CSupportedAdapters SupportedAdapters;
 
 bool IsSupportedSRIOVAdapter(LPCWSTR pnpId)
 {
-    for (UINT i = 0; i < ELEMENTS_IN(SupportedAdapters); ++i)
+    CStringW sId = pnpId;
+    sId.MakeLower();
+    for (UINT i = 0; i < SupportedAdapters.GetCount(); ++i)
     {
-        if (wcsstr(pnpId, SupportedAdapters[i]))
-        {
+        CStringW& s = SupportedAdapters.GetAt(i);
+        if (sId.Find(s) > 0) {
             return true;
         }
     }

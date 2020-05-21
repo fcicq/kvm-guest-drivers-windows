@@ -34,6 +34,7 @@
 #include <atlcom.h>
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some CString constructors will be explicit
 #include <atlstr.h>
+#include <atlcoll.h>
 #include <devguid.h>
 #include "resource.h"
 
