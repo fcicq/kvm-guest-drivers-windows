@@ -44,6 +44,8 @@ static LPCWSTR SupportedAdapters[] =
     L"ven_8086&dev_10ca", //Intel 82576 Virtual Function
     L"ven_8086&dev_15a8", //Intel Ethernet Connection X552
     L"ven_15b3&dev_101a", //Mellanox MT28800 Family
+
+    L"ven_8086&dev_10d3", // Local test only: Intel e1000
 };
 
 bool IsSupportedSRIOVAdapter(LPCWSTR pnpId)
