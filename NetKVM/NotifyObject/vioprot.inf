@@ -34,7 +34,7 @@ CopyFiles=Copy.Exec
 ; Ndi installation support
 ;-------------------------------------------------------------------------
 [Inst_Ndi]
-HKR, Ndi, ClsID, 0, {5a3db745-e424-4402-a575-af5e4bc65b1d}
+HKR, Ndi, ClsID, 0, {F69513F1-8E1A-4F35-82D9-046406970E6D}
 HKR, Ndi, ComponentDll, , netkvmno.dll
 HKR,Ndi,Service,,netkvmp
 HKR,Ndi,HelpText,,%NETKVMP_HelpText%
