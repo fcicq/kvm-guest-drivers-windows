@@ -45,8 +45,8 @@ typedef struct _tagIPv6ExtHeader {
 
 // IP Pseudo Header RFC 768
 typedef struct _tagIPv4PseudoHeader {
-    ULONG       ipph_src;               // Source address
-    ULONG       ipph_dest;              // Destination address
+    UCHAR       ipph_srca[4];           // Source address
+    UCHAR       ipph_desta[4];          // Destination address
     UCHAR       ipph_zero;              // 0
     UCHAR       ipph_protocol;          // TCP/UDP
     USHORT      ipph_length;            // TCP/UDP length
@@ -80,7 +80,7 @@ typedef struct _tagIP6_TYPE2_ROUTING_HEADER
     UCHAR           HdrLen;
     UCHAR           RoutingType;
     UCHAR           SegmentsLeft;
-    ULONG           Reserved;
+    UCHAR           Reserved[4];
     IPV6_ADDRESS    Address;
 } IP6_TYPE2_ROUTING_HEADER, *PIP6_TYPE2_ROUTING_HEADER;
 
@@ -437,8 +437,8 @@ static __inline USHORT CalculateIpv4PseudoHeaderChecksum(IPv4Header *pIpHeader, 
 {
     tIPv4PseudoHeader ipph;
     USHORT checksum;
-    ipph.ipph_src  = pIpHeader->ip_src;
-    ipph.ipph_dest = pIpHeader->ip_dest;
+    RtlCopyMemory(ipph.ipph_srca, pIpHeader->ip_srca, sizeof(ipph.ipph_srca));
+    RtlCopyMemory(ipph.ipph_desta, pIpHeader->ip_desta, sizeof(ipph.ipph_desta));
     ipph.ipph_zero = 0;
     ipph.ipph_protocol = pIpHeader->ip_protocol;
     ipph.ipph_length = swap_short(headerAndPayloadLen);
@@ -451,14 +451,8 @@ static __inline USHORT CalculateIpv6PseudoHeaderChecksum(IPv6Header *pIpHeader, 
 {
     tIPv6PseudoHeader ipph;
     USHORT checksum;
-    ipph.ipph_src[0]  = pIpHeader->ip6_src_address[0];
-    ipph.ipph_src[1]  = pIpHeader->ip6_src_address[1];
-    ipph.ipph_src[2]  = pIpHeader->ip6_src_address[2];
-    ipph.ipph_src[3]  = pIpHeader->ip6_src_address[3];
-    ipph.ipph_dest[0] = pIpHeader->ip6_dst_address[0];
-    ipph.ipph_dest[1] = pIpHeader->ip6_dst_address[1];
-    ipph.ipph_dest[2] = pIpHeader->ip6_dst_address[2];
-    ipph.ipph_dest[3] = pIpHeader->ip6_dst_address[3];
+    ipph.ipph_src = pIpHeader->ip6_src_address;
+    ipph.ipph_dest = pIpHeader->ip6_dst_address;
     ipph.z1 = ipph.z2 = ipph.z3 = 0;
     ipph.ipph_protocol = pIpHeader->ip6_next_header;
     ipph.ipph_length = swap_short(headerAndPayloadLen);

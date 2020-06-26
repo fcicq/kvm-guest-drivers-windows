@@ -54,7 +54,9 @@ EthernetArpFrame *CGuestAnnouncePackets::CreateIPv4Packet(UINT32 IPV4)
         // according to RFC 5227 ARP announcement shall set target hardware address to zero
         packet->data.target_hardware_address.address[i] = 0;
     }
-    packet->data.sender_ipv4_address.address = packet->data.target_ipv4_address.address = IPV4;
+    ipv4_address addr;
+    RtlCopyMemory(&addr, &IPV4, sizeof(IPV4));
+    packet->data.sender_ipv4_address = packet->data.target_ipv4_address = addr;
     return packet;
 }
 
@@ -87,7 +89,8 @@ EthernetNSMFrame *CGuestAnnouncePackets::CreateIPv6Packet(USHORT * IPV6)
     packet->data.nsm.type = pseudo_header.nsm.type = ETH_ICMPV6_TYPE_NSM;
     packet->data.nsm.code = pseudo_header.nsm.code = 0x0;
     packet->data.nsm.checksum = pseudo_header.nsm.checksum = 0x0;
-    packet->data.nsm.reserved = pseudo_header.nsm.reserved = 0x0;
+    packet->data.nsm._reserved[0] = packet->data.nsm._reserved[1] = 0x0;
+    pseudo_header.nsm._reserved[0] = pseudo_header.nsm._reserved[1] = 0x0;
     packet->data.nsm.checksum = (CheckSumCalculator(&pseudo_header, sizeof(pseudo_header)));
     return packet;
 }

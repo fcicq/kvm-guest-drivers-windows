@@ -758,8 +758,8 @@ VOID RSSCalcHash_Unsafe(
             IPv4Header *pIpHeader = (IPv4Header *) RtlOffsetToPointer(dataBuffer, packetInfo->L2HdrLen);
             TCPHeader *pTCPHeader = (TCPHeader *) RtlOffsetToPointer(pIpHeader, packetInfo->L3HdrLen);
 
-            sgBuff[0].chunkPtr = RtlOffsetToPointer(pIpHeader, FIELD_OFFSET(IPv4Header, ip_src));
-            sgBuff[0].chunkLen = RTL_FIELD_SIZE(IPv4Header, ip_src) + RTL_FIELD_SIZE(IPv4Header, ip_dest);
+            sgBuff[0].chunkPtr = RtlOffsetToPointer(pIpHeader, FIELD_OFFSET(IPv4Header, ip_srca));
+            sgBuff[0].chunkLen = RTL_FIELD_SIZE(IPv4Header, ip_srca) + RTL_FIELD_SIZE(IPv4Header, ip_desta);
             sgBuff[1].chunkPtr = RtlOffsetToPointer(pTCPHeader, FIELD_OFFSET(TCPHeader, tcp_src));
             sgBuff[1].chunkLen = RTL_FIELD_SIZE(TCPHeader, tcp_src) + RTL_FIELD_SIZE(TCPHeader, tcp_dest);
 
@@ -775,8 +775,8 @@ VOID RSSCalcHash_Unsafe(
             IPv4Header *pIpHeader = (IPv4Header *)RtlOffsetToPointer(dataBuffer, packetInfo->L2HdrLen);
             UDPHeader *pUDPHeader = (UDPHeader *)RtlOffsetToPointer(pIpHeader, packetInfo->L3HdrLen);
 
-            sgBuff[0].chunkPtr = RtlOffsetToPointer(pIpHeader, FIELD_OFFSET(IPv4Header, ip_src));
-            sgBuff[0].chunkLen = RTL_FIELD_SIZE(IPv4Header, ip_src) + RTL_FIELD_SIZE(IPv4Header, ip_dest);
+            sgBuff[0].chunkPtr = RtlOffsetToPointer(pIpHeader, FIELD_OFFSET(IPv4Header, ip_srca));
+            sgBuff[0].chunkLen = RTL_FIELD_SIZE(IPv4Header, ip_srca) + RTL_FIELD_SIZE(IPv4Header, ip_desta);
             sgBuff[1].chunkPtr = RtlOffsetToPointer(pUDPHeader, FIELD_OFFSET(UDPHeader, udp_src));
             sgBuff[1].chunkLen = RTL_FIELD_SIZE(UDPHeader, udp_src) + RTL_FIELD_SIZE(UDPHeader, udp_dest);
 
@@ -789,8 +789,8 @@ VOID RSSCalcHash_Unsafe(
 
         if(hashTypes & NDIS_HASH_IPV4)
         {
-            sgBuff[0].chunkPtr = RtlOffsetToPointer(dataBuffer, packetInfo->L2HdrLen + FIELD_OFFSET(IPv4Header, ip_src));
-            sgBuff[0].chunkLen = RTL_FIELD_SIZE(IPv4Header, ip_src) + RTL_FIELD_SIZE(IPv4Header, ip_dest);
+            sgBuff[0].chunkPtr = RtlOffsetToPointer(dataBuffer, packetInfo->L2HdrLen + FIELD_OFFSET(IPv4Header, ip_srca));
+            sgBuff[0].chunkLen = RTL_FIELD_SIZE(IPv4Header, ip_srca) + RTL_FIELD_SIZE(IPv4Header, ip_desta);
 
             packetInfo->RSSHash.Value = ToeplitzHash(sgBuff, 1, RSSParameters->ActiveHashingSettings.HashSecretKey);
             packetInfo->RSSHash.Type = NDIS_HASH_IPV4;

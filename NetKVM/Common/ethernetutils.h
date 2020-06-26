@@ -61,7 +61,10 @@ typedef struct _VLAN_HEADER
 } VLAN_HEADER, *PVLAN_HEADER;
 #include <poppack.h>
 
-typedef ULONG IPV6_ADDRESS[4];
+typedef struct _IPV6_ADDRESS
+{
+    UCHAR address[16];
+}IPV6_ADDRESS;
 
 #define ETH_HEADER_SIZE                     (sizeof(ETH_HEADER))
 #define ETH_MIN_PACKET_SIZE                 60
@@ -93,16 +96,8 @@ typedef struct _tagIPv4Header {
     UCHAR       ip_ttl;                // Time to live
     UCHAR       ip_protocol;           // Protocol
     USHORT      ip_xsum;               // Header checksum
-    union
-    {
-        ULONG       ip_src;                // Source IP address
-        UCHAR       ip_srca[4];
-    };
-    union
-    {
-        ULONG       ip_dest;               // Destination IP address
-        UCHAR       ip_desta[4];
-    };
+    UCHAR       ip_srca[4];            // Source IP address
+    UCHAR       ip_desta[4];           // Destination IP address
 } IPv4Header;
 
 // IPv6 Header RFC 2460 (40 bytes)
@@ -129,8 +124,8 @@ typedef union
 typedef struct _tagTCPHeader {
     USHORT      tcp_src;                // Source port
     USHORT      tcp_dest;               // Destination port
-    ULONG       tcp_seq;                // Sequence number
-    ULONG       tcp_ack;                // Ack number
+    UCHAR       tcp_seq[4];             // Sequence number
+    UCHAR       tcp_ack[4];             // Ack number
     USHORT      tcp_flags;              // header length and flags
     USHORT      tcp_window;             // Window size
     USHORT      tcp_xsum;               // Checksum
@@ -153,7 +148,7 @@ typedef struct _hardware_address {
 } hardware_address;
 
 typedef struct _ipv4_address {
-    UINT32 address;
+    UINT8 address[4];
 } ipv4_address;
 
 typedef struct _ipv6_address {
@@ -189,7 +184,7 @@ typedef struct _ICMPv6NSM {
     UINT8 type;
     UINT8 code;
     UINT16 checksum;
-    UINT32 reserved;
+    UINT16 _reserved[2];
     ipv6_address target_address;
 } ICMPv6NSM;
 
