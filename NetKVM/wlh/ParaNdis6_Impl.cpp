@@ -1089,7 +1089,8 @@ VOID ParaNdis6_ReturnNetBufferLists(
 
     DEBUG_ENTRY(5);
 
-    ParaNdis_ReuseRxNBLs(pNBL);
+    //ParaNdis_ReuseRxNBLs(pNBL);
+    NdisFreeNetBufferList(pNBL); // fcicq: this comes from ARM64
 	UNREFERENCED_PARAMETER(NumNBLs);
 	UNREFERENCED_PARAMETER(pContext);
     //pContext->m_RxStateMachine.UnregisterOutstandingItems(NumNBLs); //fcicq
