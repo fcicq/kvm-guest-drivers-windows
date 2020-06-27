@@ -227,7 +227,7 @@ void CParaNdisRX::FreeRxDescriptorsFromList()
 void CParaNdisRX::ReuseReceiveBufferNoLock(pRxNetDescriptor pBuffersDescriptor)
 {
     DEBUG_ENTRY(4);
-
+	//fcicq note: this list is unlimited?
     if (!m_Reinsert)
     {
         InsertTailList(&m_NetReceiveBuffers, &pBuffersDescriptor->listEntry);

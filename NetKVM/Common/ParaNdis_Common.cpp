@@ -1536,7 +1536,7 @@ UpdateReceiveSuccessStatistics(PPARANDIS_ADAPTER pContext,
                                PNET_PACKET_INFO pPacketInfo,
                                UINT nCoalescedSegmentsCount)
 {
-    pContext->Statistics.ifHCInOctets += pPacketInfo->dataLength;
+    //pContext->Statistics.ifHCInOctets += pPacketInfo->dataLength;
 
     if(pPacketInfo->isUnicast)
     {
@@ -1585,6 +1585,9 @@ static void ProcessReceiveQueue(PARANDIS_ADAPTER *pContext,
             ShallPassPacket(pContext, pPacketInfo))
         {
             UINT nCoalescedSegmentsCount;
+			pContext->Statistics.ifHCInOctets += pPacketInfo->dataLength; //fcicq move before
+			(*pnPacketsToIndicateLeft)--; //fcicq: move before
+			(*nIndicate)++;
             PNET_BUFFER_LIST packet = ParaNdis_PrepareReceivedPacket(pContext, pBufferDescriptor, &nCoalescedSegmentsCount);
             if(packet != NULL)
             {
@@ -1600,13 +1603,11 @@ static void ProcessReceiveQueue(PARANDIS_ADAPTER *pContext,
                 }
 
                 NET_BUFFER_LIST_NEXT_NBL(*indicateTail) = NULL;
-                (*pnPacketsToIndicateLeft)--;
-                (*nIndicate)++;
             }
             else
             {
                 UpdateReceiveFailStatistics(pContext, nCoalescedSegmentsCount);
-                pBufferDescriptor->Queue->ReuseReceiveBuffer(pBufferDescriptor);
+                //pBufferDescriptor->Queue->ReuseReceiveBuffer(pBufferDescriptor); //fcicq: arm64?
             }
         }
         else
@@ -1680,16 +1681,16 @@ BOOLEAN RxDPCWorkBody(PARANDIS_ADAPTER *pContext, CPUPathBundle *pathBundle, ULO
     }
 #endif
 
-    if (nIndicate)
+    if (0) //(nIndicate)
     {
         if(pContext->m_RxStateMachine.RegisterOutstandingItems(nIndicate))
         {
-            NdisMIndicateReceiveNetBufferLists(pContext->MiniportHandle,
-                                                indicate, 0, nIndicate, NDIS_RECEIVE_FLAGS_DISPATCH_LEVEL);
+            //NdisMIndicateReceiveNetBufferLists(pContext->MiniportHandle,
+            //                                    indicate, 0, nIndicate, NDIS_RECEIVE_FLAGS_DISPATCH_LEVEL);
         }
         else
         {
-            ParaNdis_ReuseRxNBLs(indicate);
+            //ParaNdis_ReuseRxNBLs(indicate);
         }
     }
 
@@ -2125,7 +2126,7 @@ tChecksumCheckResult ParaNdis_CheckRxChecksum(
         }
     }
 
-    if (pPacketInfo->isIP4 || pPacketInfo->isIP6)
+    if (0) //(pPacketInfo->isIP4 || pPacketInfo->isIP6)
     {
         ppr = ParaNdis_CheckSumVerify(pPacketPages, ulPacketLength - ETH_HEADER_SIZE,
                                       ulDataOffset + ETH_HEADER_SIZE, flagsToCalculate,
@@ -2133,8 +2134,13 @@ tChecksumCheckResult ParaNdis_CheckRxChecksum(
     }
     else
     {
-        ppr.value = 0;
-        ppr.ipStatus = ppresNotIP;
+		if (pPacketInfo->isIP4 || pPacketInfo->isIP6) {
+			ppr.xxpCheckSum = ppresCSOK;
+			ppr.ipCheckSum = ppresCSOK;
+		} else {
+			ppr.value = 0;
+			ppr.ipStatus = ppresNotIP;
+		}
     }
 
     if (ppr.ipCheckSum == ppresIPTooShort || ppr.xxpStatus == ppresXxpIncomplete)

@@ -60,7 +60,7 @@ extern "C"
 #endif
 
 #if NDIS_SUPPORT_NDIS620
-#define PARANDIS_SUPPORT_RSS 1
+//#define PARANDIS_SUPPORT_RSS 1
 #endif
 
 #if !NDIS_SUPPORT_NDIS620

@@ -908,7 +908,7 @@ VOID NBLSetRSCInfo(PPARANDIS_ADAPTER pContext, PNET_BUFFER_LIST pNBL,
 #endif
 
 #if defined(NETKVM_COPY_RX_DATA)
-static PNET_BUFFER_LIST CloneNblFreeOriginalForArm(PARANDIS_ADAPTER *pContext, PNET_BUFFER_LIST original, PVOID bufferDesc)
+static PNET_BUFFER_LIST CloneNblFreeOriginalForArm(PARANDIS_ADAPTER *pContext, PNET_BUFFER_LIST original, pRxNetDescriptor bufferDesc)
 {
     PNET_BUFFER_LIST pNewNbl;
     if (!original)
@@ -928,7 +928,7 @@ static PNET_BUFFER_LIST CloneNblFreeOriginalForArm(PARANDIS_ADAPTER *pContext, P
         if (done == NET_BUFFER_DATA_LENGTH(src))
         {
             NdisCopyReceiveNetBufferListInfo(pNewNbl, original);
-            pNewNbl->MiniportReserved[0] = bufferDesc;
+            pNewNbl->MiniportReserved[0] = (PVOID) bufferDesc;
         }
         else
         {
@@ -942,8 +942,12 @@ static PNET_BUFFER_LIST CloneNblFreeOriginalForArm(PARANDIS_ADAPTER *pContext, P
     {
         DPrintf(0, "[%s] ERROR: Can't allocate NBL\n", __FUNCTION__);
     }
-    NdisFreeNetBufferList(original);
-    return pNewNbl;
+	ParaNdis_ReuseRxNBLs(original);
+	if (pNewNbl) {
+		NdisMIndicateReceiveNetBufferLists(pContext->MiniportHandle,
+			pNewNbl, 0, 1, NDIS_RECEIVE_FLAGS_DISPATCH_LEVEL);
+	}
+    return NULL; // fcicq: we already indicated this! or NDIS_RECEIVE_FLAGS_RESOURCES?
 }
 #else
 #define CloneNblFreeOriginalForArm(ctx, org, bufDesc) (org)
@@ -1086,8 +1090,9 @@ VOID ParaNdis6_ReturnNetBufferLists(
     DEBUG_ENTRY(5);
 
     ParaNdis_ReuseRxNBLs(pNBL);
-
-    pContext->m_RxStateMachine.UnregisterOutstandingItems(NumNBLs);
+	UNREFERENCED_PARAMETER(NumNBLs);
+	UNREFERENCED_PARAMETER(pContext);
+    //pContext->m_RxStateMachine.UnregisterOutstandingItems(NumNBLs); //fcicq
 }
 
 NDIS_STATUS ParaNdis_ExactSendFailureStatus(PARANDIS_ADAPTER *pContext)

@@ -177,7 +177,7 @@ private:
 
     CNdisList<CNB, CRawAccess, CNonCountingObject> m_Buffers;
 
-    ULONG m_BuffersNumber = 0;
+	CNdisRefCounter m_BuffersNumber;
     CNdisRefCounter m_BuffersMapped;
     CNdisRefCounter m_MappedBuffersDetached;
     CNdisRefCounter m_BuffersDone;

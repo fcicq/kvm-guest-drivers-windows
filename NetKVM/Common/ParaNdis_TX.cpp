@@ -77,13 +77,13 @@ bool CNBL::ParsePriority()
 void CNBL::RegisterNB(CNB *NB)
 {
     m_Buffers.PushBack(NB);
-    m_BuffersNumber++;
+    m_BuffersNumber.AddRef(); //fcicq
 }
 
 void CNBL::RegisterMappedNB(CNB *NB)
 {
     UNREFERENCED_PARAMETER(NB);
-    if (m_BuffersNumber == (ULONG)m_BuffersMapped.AddRef())
+    if ((ULONG)m_BuffersNumber == (ULONG)m_BuffersMapped.AddRef()) //fcicq
     {
         m_ParentTXPath->NBLMappingDone(this);
     }
