@@ -319,8 +319,8 @@ void CParaNdisTX::CompleteOutstandingNBLChain(PNET_BUFFER_LIST NBL, ULONG Flags)
     ULONG NBLNum = ParaNdis_CountNBLs(NBL);
 
     ParaNdis_CompleteNBLChain(m_Context->MiniportHandle, NBL, Flags);
-
-    m_StateMachine.UnregisterOutstandingItems(NBLNum);
+	UNREFERENCED_PARAMETER(NBLNum); //fcicq
+    //m_StateMachine.UnregisterOutstandingItems(NBLNum);
 }
 
 void CParaNdisTX::CompleteOutstandingInternalNBL(PNET_BUFFER_LIST NBL, BOOLEAN UnregisterOutstanding /*= TRUE*/)
@@ -328,10 +328,10 @@ void CParaNdisTX::CompleteOutstandingInternalNBL(PNET_BUFFER_LIST NBL, BOOLEAN U
     ULONG NBLNum = ParaNdis_CountNBLs(NBL);
 
     CGuestAnnouncePackets::NblCompletionCallback(NBL);
-
+	UNREFERENCED_PARAMETER(NBLNum); //fcicq
     if (UnregisterOutstanding)
     {
-        m_StateMachine.UnregisterOutstandingItems(NBLNum);
+        //m_StateMachine.UnregisterOutstandingItems(NBLNum);
     }
 }
 
@@ -341,7 +341,7 @@ void CParaNdisTX::Send(PNET_BUFFER_LIST NBL)
     NDIS_STATUS RejectionStatus = NDIS_STATUS_FAILURE;
     BOOLEAN CallCompletion = CallCompletionForNBL(m_Context, NBL);
 
-    if (!m_StateMachine.RegisterOutstandingItems(ParaNdis_CountNBLs(NBL), &RejectionStatus))
+    if (0) //(!m_StateMachine.RegisterOutstandingItems(ParaNdis_CountNBLs(NBL), &RejectionStatus))
     {
         if (CallCompletion)
         {

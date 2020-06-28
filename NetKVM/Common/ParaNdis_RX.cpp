@@ -249,8 +249,9 @@ void CParaNdisRX::ReuseReceiveBufferNoLock(pRxNetDescriptor pBuffersDescriptor)
         if (++m_nReusedRxBuffersCounter >= m_nReusedRxBuffersLimit)
         {
             m_nReusedRxBuffersCounter = 0;
-            m_VirtQueue.Kick();
+			//m_VirtQueue.Kick();
         }
+		m_VirtQueue.Kick();
     }
     else
     {
